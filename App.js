@@ -4,41 +4,52 @@ import { StyleSheet,
           Text, 
           View,
           TextInput,
-          Button
+          Button,
+          FlatList
         } from 'react-native';
 
-export default function App() {
+ import TareaItem from './components/TareaItem';  
+ import TareaHeader from './components/TareaHeader';     
 
-  const [tarea, setTarea] = useState('');
+export default function App() {
   const [tareaList, setTareaList] = useState([])
 
-  //setTarea('10') ===> tarea = '10'
-
-  function tareaTextHandler(texto){
-    setTarea(texto);
-  }
-  const tareaTextHandler2 = (texto)=>{
-    setTarea(texto);
-  }
-
-  const tareaAddHandler=()=>{
+  const tareaAddHandler=(tarea)=>{
     setTareaList( [
       ...tareaList, {text:tarea, id:Math.random().toString()} 
     ] )
   }
+
+  const tareaDeleteHandler = (id)=>{
+    setTareaList(
+      tareaList.filter( (item) => item.id !== id)
+    )
+  }
+
  // objeto={name:'Juan', age:40}
 
   return (
     <View style={styles.appContainer}>
-      <View style={styles.headerContainer}> 
-        <TextInput 
-          style={styles.textInput}
-          placeholder='ingrese tarea'
-          onChangeText={tareaTextHandler} />
-        <Button title='Agregar' />
-      </View>
+      
+      <TareaHeader 
+        onAddTarea={tareaAddHandler} 
+        
+        />
+
       <View style={styles.bodyContainer}>
-        <Text>Lista de Tareas...{tarea}</Text>
+        <FlatList
+          data={tareaList}
+          renderItem={ (obj) =>   
+            <TareaItem 
+              id={obj.item.id} 
+              text={obj.item.text}
+              onDeleteTarea={tareaDeleteHandler}
+            />
+          } //obj={item:x, index:n}
+          keyExtractor={(item, index)=> item.id}
+        />
+
+        
       </View>
     </View>
   );
@@ -49,22 +60,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  headerContainer:{
-    flex:1,
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
-    backgroundColor:'yellow',
-    padding:16
-  },
+  
   bodyContainer:{
     flex:4,
-    backgroundColor:'green'
+    // backgroundColor:'green'
   },
-  textInput:{
-    borderWidth:1,
-    borderColor:'#dddddd',
-    padding:8,
-    width:'80%'
-  }
+  
+ 
 });
